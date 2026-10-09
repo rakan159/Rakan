@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E5A4B"><link rel="manifest" href="manifest.json">
+<title>إدارة القضايا Pro Cloud</title>
+<style>
+:root{--bg:#edf0ec;--card:#fff;--ink:#16262b;--muted:#637277;--line:#d5dcd7;--pri:#0e5a4b;--soft:#ddebe6;--bad:#a8231b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif;line-height:1.6}
+.wrap{max-width:1100px;margin:auto;padding:18px 16px 50px}header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:28px}.sub{margin:0;color:var(--muted);font-size:14px}.acts{display:flex;gap:8px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer}.btn,.ghost{border-radius:9px;padding:10px 15px;border:1px solid var(--line)}.btn{background:var(--pri);color:#fff;border-color:var(--pri)}.ghost{background:var(--card);color:var(--ink)}
+.search{margin:20px 0}.search input{width:100%;padding:13px 15px;font-size:18px;border:2px solid var(--ink);border-radius:10px;background:var(--card)}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}.stat{padding:13px 16px;border-left:1px solid var(--line)}.stat b{display:block;font-size:21px}.stat span{color:var(--muted);font-size:13px}
+h2{font-size:19px;margin:24px 0 10px}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:5px 14px}.chip.active{background:var(--ink);color:#fff}
+.row{width:100%;display:flex;gap:12px;align-items:center;text-align:start;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:8px 0;color:var(--ink)}.row:hover{border-color:var(--pri)}.mid{flex:1}.mid small{display:block;color:var(--muted);font-size:13px}.tag{display:inline-block;border-radius:99px;padding:2px 10px;background:var(--soft);color:var(--pri);font-size:12px;font-weight:bold}.tag.danger{background:#f9ddda;color:var(--bad)}
+.crow{display:flex;gap:8px;align-items:stretch;margin:8px 0}.crow .row{margin:0;flex:1.3}.qn{flex:1;min-width:0;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fffbe9;color:var(--ink);font:inherit;font-size:14px;resize:vertical;min-height:64px}.qn:focus{outline:2px solid var(--pri)}
+.empty{padding:20px;border:1px dashed var(--line);border-radius:10px;text-align:center;color:var(--muted)}dialog{border:0;border-radius:14px;padding:0;width:min(780px,calc(100% - 20px));max-height:calc(100% - 20px);background:var(--card);color:var(--ink)}dialog::backdrop{background:#0008}.dh{padding:12px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--card)}.db{padding:16px 18px 22px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}.f{display:block;color:var(--muted);font-size:13px}.f input,.f select,.f textarea{display:block;width:100%;margin-top:4px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.notice{padding:10px 13px;border-radius:9px;margin:10px 0;background:#fff3d9;color:#7a4a00}.ok{background:#dff0e9;color:#075d48}.bad{background:#f9ddda;color:#7e1710}.hi{border:1px solid var(--line);border-radius:8px;padding:9px;margin:7px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.res{flex:1;min-width:180px;padding:7px;border:1px solid var(--line);border-radius:7px;background:var(--bg);font:inherit}.x{border:0;background:none;color:var(--bad);font-size:20px}.file{border:1px solid var(--line);padding:9px;border-radius:8px;margin:7px 0;display:flex;justify-content:space-between;gap:8px;align-items:center}.toast{position:fixed;bottom:18px;left:16px;right:16px;background:var(--ink);color:#fff;padding:10px;border-radius:9px;text-align:center;display:none;z-index:20}
+@media(max-width:650px){.crow{flex-direction:column}.strip{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div><h1>إدارة القضايا Pro</h1><p class="sub">نظام سحابي للقضايا والجلسات والأتعاب والمرفقات</p></div>
+<div class="acts"><button class="ghost" id="accountBtn">الحساب</button><button class="ghost" id="backupBtn">نسخة احتياطية</button><button class="btn" id="newBtn">+ قضية جديدة</button></div></header>
+<div id="status"></div><div class="search"><input id="q" type="search" placeholder="ابحث برقم القضية أو الموكل أو الخصم أو المحكمة"></div>
+<div class="strip" id="stats"></div><h2>الجلسات القادمة</h2><div id="upcoming"></div><h2>القضايا</h2><div class="chips" id="chips"></div><div id="list"></div>
+<footer style="color:var(--muted);font-size:12px;margin-top:28px">البيانات السحابية مرتبطة بحساب المستخدم، وسياسات RLS تمنع المستخدم من رؤية بيانات حساب آخر.</footer>
+</div>
+<dialog id="dlg"><div class="dh"><b id="dt"></b><button class="ghost" id="close">إغلاق</button></div><div class="db" id="dc"></div></dialog><div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
+<script>
+const CONFIG_KEY='qadaya.cloud.config.v1';
+let CFG={url:'',key:''};try{CFG=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}')}catch(e){}
+let sb=null,user=null,S={cases:[]},filter='all',q='',curId='';
+const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2);
+const toast=m=>{let t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(window._tt);window._tt=setTimeout(()=>t.style.display='none',3000)};
+const norm=s=>String(s||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).toLowerCase().replace(/[\s\-\/]/g,'');
+const day0=()=>{let d=new Date();d.setHours(0,0,0,0);return d},diff=ds=>Math.round((new Date(ds+'T00:00:00')-day0())/864e5);
+const fd=ds=>new Intl.DateTimeFormat('ar-SA-u-ca-gregory',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date(ds+'T00:00:00'));
+const money=n=>(Number(n)||0).toLocaleString('ar-SA')+' ر.س';
+const pend=c=>c.hearings.filter(h=>!h.done).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
+const tag=ds=>{let n=diff(ds),cl=n<0?'danger':'';let x=n===0?'اليوم':n===1?'غدًا':n>1?'بعد '+n+' أيام':n===-1?'أمس':'منذ '+(-n)+' يومًا';return `<span class="tag ${cl}">${x}</span>`};
+
+async function initCloud(){
+ if(!CFG.url||!CFG.key){showLogin('إعداد النظام','قبل استخدام النظام السحابي أدخل بيانات مشروع Supabase.');return}
+ try{sb=window.supabase.createClient(CFG.url,CFG.key);let r=await sb.auth.getSession();user=r.data.session?.user||null;if(user){await loadAll();render();showStatus('متصل بالسحابة: '+(user.email||''),'ok')}else showLogin('تسجيل الدخول','سجّل الدخول للوصول إلى القضايا من أي جهاز.')}catch(e){showStatus('تعذر الاتصال بالسحابة: '+e.message,'bad')}
+}
+function showStatus(t,c='notice'){$('#status').innerHTML=`<div class="notice ${c}">${esc(t)}</div>`}
+function showLogin(title,msg){
+ show(title,`<div class="notice">${esc(msg)}</div><form id="login"><div class="grid"><label class="f">البريد الإلكتروني<input name="email" type="email" required></label><label class="f">كلمة المرور<input name="password" type="password" minlength="6" required></label></div><p><button class="btn">دخول</button> <button type="button" class="ghost" id="signup">إنشاء حساب</button> <button type="button" class="ghost" id="config">إعداد الاتصال</button></p></form>`);
+ $('#signup').onclick=async()=>{if(!sb){toast('أدخل إعداد الاتصال أولًا');return}let f=$('#login'),d=Object.fromEntries(new FormData(f));let r=await sb.auth.signUp({email:d.email,password:d.password});if(r.error)toast(r.error.message);else toast('تم إنشاء الحساب؛ تحقق من بريدك إذا طلب النظام ذلك')};
+ $('#login').onsubmit=async e=>{e.preventDefault();if(!sb){toast('أدخل إعداد الاتصال أولًا');return}let d=Object.fromEntries(new FormData(e.target)),r=await sb.auth.signInWithPassword(d);if(r.error)toast(r.error.message);else{user=r.data.user;$('#dlg').close();await loadAll();render();showStatus('تم تسجيل الدخول: '+user.email,'ok')}};
+ $('#config').onclick=()=>config();
+}
+function config(){
+ show('إعداد السحابة',`<div class="notice">استخدم Project URL وPublishable Key من إعدادات مشروع Supabase. لا تستخدم Service Role Key داخل المتصفح.</div><form id="cfg"><label class="f">Project URL<input name="url" required value="${esc(CFG.url)}" placeholder="https://xxxx.supabase.co"></label><label class="f" style="margin-top:10px">Publishable / anon key<input name="key" required value="${esc(CFG.key)}"></label><p><button class="btn">حفظ والاتصال</button></p></form>`);
+ $('#cfg').onsubmit=e=>{e.preventDefault();let d=Object.fromEntries(new FormData(e.target));CFG=d;localStorage.setItem(CONFIG_KEY,JSON.stringify(CFG));location.reload()};
+}
+async function loadAll(){
+ let {data:cases,error}=await sb.from('cases').select('*').order('created_at',{ascending:false});if(error)throw error;
+ let ids=(cases||[]).map(c=>c.id), hearings=[];
+ if(ids.length){let r=await sb.from('hearings').select('*').in('case_id',ids);if(r.error)throw r.error;hearings=r.data||[]}
+ S.cases=(cases||[]).map(c=>({...c,hearings:hearings.filter(h=>h.case_id===c.id),attachments:[]}));
+}
+function render(){
+ const active=S.cases.filter(c=>c.status==='جارية'),P=active.flatMap(c=>pend(c).map(h=>({c,h}))).sort((a,b)=>(a.h.date+(a.h.time||'')).localeCompare(b.h.date+(b.h.time||'')));
+ const week=P.filter(x=>diff(x.h.date)>=0&&diff(x.h.date)<=7).length,late=P.filter(x=>diff(x.h.date)<0).length,rem=S.cases.reduce((t,c)=>t+Math.max(0,(+c.fee||0)-(+c.paid||0)),0);
+ $('#stats').innerHTML=[[active.length,'قضايا جارية'],[week,'جلسات خلال 7 أيام'],[late,'جلسات متأخرة'],[money(rem),'أتعاب متبقية']].map(x=>`<div class="stat"><b>${x[0]}</b><span>${x[1]}</span></div>`).join('');
+ $('#upcoming').innerHTML=P.length?P.slice(0,8).map(({c,h})=>`<button class="row" data-open="${c.id}">${tag(h.date)}<span class="mid"><b>${esc(c.num)}</b> — ${esc(c.client)}<small>${fd(h.date)} ${h.time?'الساعة '+esc(h.time):''}</small></span></button>`).join(''):'<div class="empty">لا توجد جلسات قادمة.</div>';
+ $('#chips').innerHTML=[['all','الكل'],['جارية','جارية'],['محكومة','محكومة'],['منتهية','منتهية']].map(x=>`<button class="chip ${filter===x[0]?'active':''}" data-filter="${x[0]}">${x[1]}</button>`).join('');
+ let nq=norm(q),L=S.cases.filter(c=>(filter==='all'||c.status===filter)&&(!nq||norm([c.num,c.client,c.opp,c.court,c.type,c.notes].join(' ')).includes(nq)));
+ $('#list').innerHTML=L.length?L.map(c=>{let p=pend(c)[0];return `<div class="crow"><button class="row" data-open="${c.id}"><span class="mid"><b>${esc(c.num)}</b> <span class="tag">${esc(c.status)}</span><small>${esc(c.client)}${c.opp?' ضد '+esc(c.opp):''}</small><small>${esc([c.court,c.type].filter(Boolean).join(' — '))}</small></span>${p&&c.status==='جارية'?tag(p.date):''}</button><textarea class="qn" data-note="${c.id}" rows="2" placeholder="ملاحظات على القضية...">${esc(c.notes)}</textarea></div>`}).join(''):'<div class="empty">لا توجد نتائج.</div>';
+}
+function show(title,html){$('#dt').textContent=title;$('#dc').innerHTML=html;if(!$('#dlg').open)$('#dlg').showModal()}
+async function form(id){
+ let c=S.cases.find(x=>x.id===id)||{status:'جارية',role:'مدعٍ',fee:0,paid:0},v=k=>esc(c[k]??'');
+ show(id?'تعديل القضية':'قضية جديدة',`<form id="cf" data-id="${id||''}"><div class="grid">
+ <label class="f">رقم القضية<input name="num" required value="${v('num')}"></label><label class="f">المحكمة أو الدائرة<input name="court" value="${v('court')}"></label>
+ <label class="f">نوع القضية<input name="type" value="${v('type')}"></label><label class="f">الحالة<select name="status">${['جارية','محكومة','منتهية'].map(x=>`<option ${c.status===x?'selected':''}>${x}</option>`).join('')}</select></label>
+ <label class="f">الموكل<input name="client" required value="${v('client')}"></label><label class="f">صفة الموكل<select name="role">${['مدعٍ','مدعى عليه'].map(x=>`<option ${c.role===x?'selected':''}>${x}</option>`).join('')}</select></label>
+ <label class="f full">الخصم<input name="opp" value="${v('opp')}"></label><label class="f">الأتعاب<input name="fee" type="number" min="0" value="${v('fee')}"></label><label class="f">المدفوع<input name="paid" type="number" min="0" value="${v('paid')}"></label>
+ ${id?'':'<label class="f">الجلسة القادمة<input name="hd" type="date"></label><label class="f">الوقت<input name="ht" type="time"></label>'}
+ <label class="f full">ملاحظات<textarea name="notes" rows="4">${v('notes')}</textarea></label></div><p><button class="btn">حفظ</button></p></form>`);
+ $('#cf').onsubmit=saveCase;
+}
+async function saveCase(e){
+ e.preventDefault();let f=e.target,d=Object.fromEntries(new FormData(f)),id=f.dataset.id;
+ if(!d.num.trim()||!d.client.trim())return;
+ let dup=S.cases.some(x=>norm(x.num)===norm(d.num)&&x.id!==id);if(dup){toast('رقم القضية مسجل مسبقًا');return}
+ let payload={user_id:user.id,num:d.num.trim(),court:d.court.trim(),type:d.type.trim(),status:d.status,client:d.client.trim(),role:d.role,opp:d.opp.trim(),fee:+d.fee||0,paid:+d.paid||0,notes:d.notes.trim()};
+ let r=id?await sb.from('cases').update(payload).eq('id',id).select().single():await sb.from('cases').insert(payload).select().single();
+ if(r.error){toast(r.error.message);return}if(!id&&d.hd){let hr=await sb.from('hearings').insert({case_id:r.data.id,user_id:user.id,date:d.hd,time:d.ht||null,result:'',done:false});if(hr.error)toast(hr.error.message)}
+ $('#dlg').close();await loadAll();render();detail(r.data.id);
+}
+async function detail(id){
+ let c=S.cases.find(x=>x.id===id);if(!c)return;curId=id;
+ let left=Math.max(0,(+c.fee||0)-(+c.paid||0));
+ let fr=await sb.storage.from('case-files').list(`${user.id}/${c.id}`,{limit:100});
+ let files=fr.data||[];
+ show('القضية '+c.num,`<p><span class="tag">${esc(c.status)}</span> ${esc(c.type)}</p><div class="grid">
+ <div class="f">الموكل<b>${esc(c.client)}</b></div><div class="f">الخصم<b>${esc(c.opp)||'-'}</b></div><div class="f full">المحكمة أو الدائرة<b>${esc(c.court)||'-'}</b></div>
+ <div class="f">الأتعاب<b>${money(c.fee)}</b></div><div class="f">المدفوع<b>${money(c.paid)}</b></div><div class="f full">المتبقي<b>${money(left)}</b></div>
+ ${c.notes?`<div class="f full">ملاحظات<b style="white-space:pre-wrap">${esc(c.notes)}</b></div>`:''}</div>
+ <h3>الجلسات</h3>${c.hearings.length?c.hearings.sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||''))).map(h=>`<div class="hi"><label><input type="checkbox" data-done="${h.id}" ${h.done?'checked':''}> ${fd(h.date)} ${h.time||''}</label>${h.done?'':tag(h.date)}<input class="res" data-res="${h.id}" placeholder="نتيجة الجلسة" value="${esc(h.result)}"><button class="x" data-delh="${h.id}">×</button></div>`).join(''):'<div class="empty">لا توجد جلسات.</div>'}
+ <form id="hf" style="margin-top:12px"><div class="grid"><label class="f">جلسة جديدة<input name="hd" type="date" required></label><label class="f">الوقت<input name="ht" type="time"></label></div><p><button class="btn">إضافة جلسة</button></p></form>
+ <h3>المرفقات السحابية</h3><input id="files" type="file" multiple><div id="fileList">${files.length?files.map(a=>`<div class="file"><span>📎 ${esc(a.name.replace(/^[0-9a-f-]{36}-/,''))}</span><span><button class="ghost" data-download="${esc(a.name)}">فتح</button> <button class="ghost" data-delfile="${esc(a.name)}">حذف</button></span></div>`).join(''):'<div class="empty">لا توجد مرفقات.</div>'}</div>
+ <p><button class="ghost" data-edit="${c.id}">تعديل البيانات</button> <button class="ghost" data-del="${c.id}">حذف القضية</button></p>`);
+ $('#hf').onsubmit=async e=>{e.preventDefault();let d=Object.fromEntries(new FormData(e.target));let r=await sb.from('hearings').insert({case_id:c.id,user_id:user.id,date:d.hd,time:d.ht||null,result:'',done:false});if(r.error)toast(r.error.message);else{await loadAll();render();detail(c.id)}};
+ $('#files').onchange=async e=>{for(const f of e.target.files){if(f.size>25*1024*1024){toast('الحد الأقصى للمرفق 25MB');continue}let path=`${user.id}/${c.id}/${uid()}-${f.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;let r=await sb.storage.from('case-files').upload(path,f,{upsert:false});if(r.error)toast(r.error.message)}detail(c.id)};
+}
+document.addEventListener('click',async e=>{
+ let t=e.target.closest('[data-open],[data-edit],[data-del],[data-delh],[data-delfile],[data-download],[data-filter]');if(!t)return;
+ if(t.dataset.open)detail(t.dataset.open);
+ else if(t.dataset.edit)form(t.dataset.edit);
+ else if(t.dataset.filter){filter=t.dataset.filter;render()}
+ else if(t.dataset.del){if(confirm('حذف القضية وجلساتها ومرفقاتها نهائيًا؟')){try{let fr=await sb.storage.from('case-files').list(`${user.id}/${t.dataset.del}`,{limit:1000});let ps=(fr.data||[]).map(x=>`${user.id}/${t.dataset.del}/${x.name}`);if(ps.length)await sb.storage.from('case-files').remove(ps)}catch(_){}let r=await sb.from('cases').delete().eq('id',t.dataset.del);if(r.error)toast(r.error.message);else{user=r.data.user;$('#dlg').close();await loadAll();render()}}}
+ else if(t.dataset.delh){let r=await sb.from('hearings').delete().eq('id',t.dataset.delh);if(r.error)toast(r.error.message);else{await loadAll();render();detail(curId)}}
+ else if(t.dataset.delfile){let c=S.cases.find(x=>x.id===curId),name=t.dataset.delfile;let fr=await sb.storage.from('case-files').list(`${user.id}/${c.id}`,{limit:100});let obj=(fr.data||[]).find(x=>x.name===name);if(obj){let r=await sb.storage.from('case-files').remove([`${user.id}/${c.id}/${name}`]);if(r.error)toast(r.error.message);else detail(c.id)}}
+ else if(t.dataset.download){let c=S.cases.find(x=>x.id===curId);let path=`${user.id}/${c.id}/${t.dataset.download}`;let r=await sb.storage.from('case-files').createSignedUrl(path,300);if(r.error)toast(r.error.message);else window.open(r.data.signedUrl,'_blank')}
+});
+document.addEventListener('change',async e=>{
+ if(e.target.dataset.done){let r=await sb.from('hearings').update({done:e.target.checked}).eq('id',e.target.dataset.done);if(r.error)toast(r.error.message);else{await loadAll();render();detail(curId)}}
+ else if(e.target.dataset.note){let c=S.cases.find(x=>x.id===e.target.dataset.note),v=e.target.value.trim();if(c&&(c.notes||'')!==v){let r=await sb.from('cases').update({notes:v}).eq('id',c.id);if(r.error)toast(r.error.message);else{c.notes=v;toast('تم حفظ الملاحظة')}}}
+ else if(e.target.dataset.res){let r=await sb.from('hearings').update({result:e.target.value.trim()}).eq('id',e.target.dataset.res);if(r.error)toast(r.error.message)}
+});
+$('#q').oninput=e=>{q=e.target.value;render()};$('#close').onclick=()=>$('#dlg').close();$('#newBtn').onclick=()=>user?form():showLogin('تسجيل الدخول','يجب تسجيل الدخول أولًا.');
+$('#accountBtn').onclick=()=>{if(!user)showLogin('تسجيل الدخول','');else show('الحساب',`<p>البريد: <b>${esc(user.email)}</b></p><button class="btn" id="logout">تسجيل الخروج</button>`);$('#logout')?.addEventListener('click',async()=>{await sb.auth.signOut();location.reload()})};
+$('#backupBtn').onclick=()=>{let blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='qadaya-cloud-backup.json';a.click()};
+if(CFG.url&&CFG.key)initCloud();else{showStatus('أول تشغيل: اضغط «الحساب» ثم «إعداد الاتصال» لإدخال بيانات Supabase.');}
+</script>
+</body></html>
